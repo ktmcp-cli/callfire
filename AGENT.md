@@ -1,93 +1,80 @@
-# AGENT.md — CallFire CLI for AI Agents
+# CallFire CLI - AI Agent Usage Guide
 
-This document explains how to use the CallFire CLI as an AI agent.
+This CLI is designed to be used by AI agents for voice and SMS communications.
 
-## Overview
+## Authentication
 
-The `callfire` CLI provides access to the CallFire SMS and voice broadcasting API. Use it to send texts, make calls, manage campaigns, and handle contacts.
-
-## Prerequisites
-
-Configure with credentials:
+Before using any commands, configure your credentials:
 
 ```bash
-callfire config set --username <user> --password <pass>
-callfire config show
+callfire config set --username YOUR_USERNAME --password YOUR_PASSWORD
 ```
 
-## All Commands
+## Common Tasks
 
-### Config
+### 1. Send SMS Message
 
 ```bash
-callfire config set --username <user> --password <pass>
-callfire config show
+callfire texts send --to "+1234567890" --message "MESSAGE_TEXT" --json
+callfire texts send --from "+SOURCE" --to "+DEST" --message "TEXT" --json
 ```
 
-### Calls
+### 2. List Text Messages
 
 ```bash
-callfire calls list
-callfire calls list --limit 50 --offset 0
-callfire calls list --status FINISHED
-callfire calls get <call-id>
-callfire calls send --to +12125551234 --from +18005551234 --message "Hello" --machine-message "Leave a message"
+callfire texts list --json
 ```
 
-Call states: `READY`, `SELECTED`, `CALLBACK`, `FINISHED`, `DISABLED`, `DNC`, `DNC_LIST`, `UPLOADED`, `RETRIED`
-
-### Texts (SMS)
+### 3. Get Text Message Status
 
 ```bash
-callfire texts list
-callfire texts list --limit 50
-callfire texts get <text-id>
-callfire texts send --to +12125551234 --from +18005551234 --message "Your appointment is confirmed"
+callfire texts get TEXT_ID --json
 ```
 
-### Campaigns
+### 4. Make Voice Call
 
 ```bash
-callfire campaigns list --type call
-callfire campaigns list --type text
-callfire campaigns get <campaign-id> --type call
-callfire campaigns get <campaign-id> --type text
+callfire calls send --to "+1234567890" --json
+callfire calls send --from "+SOURCE" --to "+DEST" --json
 ```
 
-### Contacts
+### 5. List Calls
 
 ```bash
-callfire contacts list
-callfire contacts list --search +12125551234
-callfire contacts get <contact-id>
-callfire contacts create --first-name "John" --last-name "Doe" --mobile-phone +12125551234 --email john@example.com
+callfire calls list --json
 ```
 
-### Account
+### 6. Get Call Details
 
 ```bash
-callfire account info
-callfire account credits
+callfire calls get CALL_ID --json
+```
+
+### 7. List Campaigns
+
+```bash
+callfire campaigns list --json
+```
+
+### 8. Get Campaign Details
+
+```bash
+callfire campaigns get CAMPAIGN_ID --json
 ```
 
 ## JSON Output
 
-Always use `--json` when parsing results:
-
-```bash
-callfire calls list --json
-callfire texts list --json
-callfire contacts list --json
-callfire account credits --json
-```
-
-## Phone Number Format
-
-All phone numbers must be in E.164 format: `+12125551234`
+All commands support `--json` flag for structured output suitable for parsing.
 
 ## Error Handling
 
-The CLI exits with code 1 on error. Common errors:
-- `Authentication failed` — Check username and password
-- `Resource not found` — Verify ID is correct
-- `Rate limit exceeded` — Wait and retry
+- Exit code 0 = success
+- Exit code 1 = error (check stderr for message)
+
+## Use Cases
+
+- **SMS Notifications**: Send order confirmations, alerts, reminders
+- **Voice Calls**: Make automated calls for notifications or surveys
+- **2FA/OTP**: Send verification codes via SMS
+- **Campaigns**: Manage broadcast SMS or voice campaigns
+- **Call Tracking**: Monitor call status and duration

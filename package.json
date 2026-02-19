@@ -1,7 +1,7 @@
 {
   "name": "@ktmcp-cli/callfire",
   "version": "1.0.0",
-  "description": "Production-ready CLI for CallFire SMS & voice broadcasting API",
+  "description": "Production-ready CLI for CallFire API - Voice calls and SMS messaging",
   "type": "module",
   "main": "src/index.js",
   "bin": {
@@ -11,8 +11,8 @@
     "callfire",
     "sms",
     "voice",
-    "broadcasting",
-    "telephony",
+    "calls",
+    "messaging",
     "cli",
     "api",
     "ktmcp"

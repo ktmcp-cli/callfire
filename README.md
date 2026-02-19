@@ -5,19 +5,18 @@
 
 # CallFire CLI
 
-A production-ready command-line interface for the [CallFire](https://callfire.com) SMS and voice broadcasting API. Send text messages, make voice calls, manage campaigns, and handle contacts directly from your terminal.
+A production-ready command-line interface for the [CallFire](https://www.callfire.com) API. Send SMS messages, make voice calls, and manage campaigns directly from your terminal.
 
-> **Disclaimer**: This is an unofficial CLI tool and is not affiliated with, endorsed by, or supported by CallFire, Inc.
+> **Disclaimer**: This is an unofficial CLI tool and is not affiliated with, endorsed by, or supported by CallFire.
 
 ## Features
 
-- **Calls** — List, view, and send voice calls with text-to-speech
-- **Texts** — Send and manage SMS messages
-- **Campaigns** — View voice and text broadcast campaigns
-- **Contacts** — Manage your contact list
-- **Account** — Check account info and credit balance
+- **Text Messaging** — Send and manage SMS/text messages
+- **Voice Calls** — Make and track voice calls
+- **Campaigns** — Manage voice and SMS campaigns
+- **HTTP Basic Auth** — Secure authentication with username/password
 - **JSON output** — All commands support `--json` for scripting and piping
-- **Colorized output** — Clean, readable terminal output with chalk
+- **Colorized output** — Clean, readable terminal output
 
 ## Why CLI > MCP
 
@@ -37,12 +36,22 @@ npm install -g @ktmcp-cli/callfire
 
 ## Authentication Setup
 
-Use your CallFire API credentials (username and password) from the [CallFire Developer Portal](https://www.callfire.com/ui/#/developer).
+### 1. Get API Credentials
 
-### Configure the CLI
+1. Log in to [CallFire](https://www.callfire.com)
+2. Enable API access in your account settings
+3. Generate API username and password
+
+### 2. Configure the CLI
 
 ```bash
 callfire config set --username YOUR_USERNAME --password YOUR_PASSWORD
+```
+
+### 3. Verify
+
+```bash
+callfire config show
 ```
 
 ## Commands
@@ -50,84 +59,49 @@ callfire config set --username YOUR_USERNAME --password YOUR_PASSWORD
 ### Configuration
 
 ```bash
+# Set credentials
 callfire config set --username <user> --password <pass>
+
+# Show current config
 callfire config show
+```
+
+### Text Messages
+
+```bash
+# List text messages
+callfire texts list
+
+# Send a text message
+callfire texts send --to "+1234567890" --message "Hello from CLI"
+callfire texts send --from "+0987654321" --to "+1234567890" --message "Custom sender"
+
+# Get text details
+callfire texts get <text-id>
 ```
 
 ### Voice Calls
 
 ```bash
-# List all calls
+# List calls
 callfire calls list
 
-# Filter by status
-callfire calls list --status FINISHED
+# Make a call
+callfire calls send --to "+1234567890"
+callfire calls send --from "+0987654321" --to "+1234567890"
 
-# Get a specific call
+# Get call details
 callfire calls get <call-id>
-
-# Send a voice call (text-to-speech)
-callfire calls send \
-  --to +12125551234 \
-  --from +18005551234 \
-  --message "Hello, this is an automated message." \
-  --machine-message "Please leave a message after the tone."
-```
-
-### SMS Text Messages
-
-```bash
-# List texts
-callfire texts list
-
-# Get a specific text
-callfire texts get <text-id>
-
-# Send an SMS
-callfire texts send \
-  --to +12125551234 \
-  --from +18005551234 \
-  --message "Your appointment is confirmed for tomorrow at 3pm."
 ```
 
 ### Campaigns
 
 ```bash
-# List call campaigns
-callfire campaigns list --type call
+# List campaigns
+callfire campaigns list
 
-# List text campaigns
-callfire campaigns list --type text
-
-# Get a specific campaign
-callfire campaigns get <campaign-id> --type call
-```
-
-### Contacts
-
-```bash
-# List contacts
-callfire contacts list
-
-# Get a specific contact
-callfire contacts get <contact-id>
-
-# Create a contact
-callfire contacts create \
-  --first-name "John" \
-  --last-name "Doe" \
-  --mobile-phone +12125551234 \
-  --email john@example.com
-```
-
-### Account
-
-```bash
-# View account info
-callfire account info
-
-# Check credit balance
-callfire account credits
+# Get campaign details
+callfire campaigns get <campaign-id>
 ```
 
 ## JSON Output
@@ -138,11 +112,46 @@ All commands support `--json` for machine-readable output:
 # Get all texts as JSON
 callfire texts list --json
 
-# Get call details
-callfire calls get <id> --json | jq '{id, to: .toNumber, from: .fromNumber, status: .state}'
+# Pipe to jq for filtering
+callfire texts list --json | jq '.[] | select(.state == "SENT")'
 
-# Check balance
-callfire account credits --json | jq '.credits'
+# Get call status
+callfire calls get <id> --json | jq '.state'
+```
+
+## Examples
+
+### Send SMS notifications
+
+```bash
+# Send a simple text
+callfire texts send --to "+1234567890" --message "Your order has shipped!"
+
+# Send from custom number
+callfire texts send \
+  --from "+0987654321" \
+  --to "+1234567890" \
+  --message "Verification code: 123456"
+```
+
+### Make voice calls
+
+```bash
+# Make a call
+callfire calls send --to "+1234567890"
+
+# Check call status
+callfire calls get <call-id> --json
+```
+
+### Track campaign performance
+
+```bash
+# List all campaigns
+callfire campaigns list --json
+
+# Get campaign details
+callfire campaigns get <campaign-id> --json | jq '{name: .name, status: .status}'
 ```
 
 ## Contributing
